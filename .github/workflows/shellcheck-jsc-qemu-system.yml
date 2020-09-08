@@ -1,14 +1,6 @@
 name: Shellcheck JSC QEMU System
 
-on:
-  pull_request:
-    paths:
-      - 'jsc-system/**'
-      - '.github/workflows/shellcheck-jsc-qemu-system.yml'
-  push:
-    paths:
-      - 'jsc-system/**'
-      - '.github/workflows/shellcheck-jsc-qemu-system.yml'
+on: [push, pull_request]
 
 jobs:
   check:
