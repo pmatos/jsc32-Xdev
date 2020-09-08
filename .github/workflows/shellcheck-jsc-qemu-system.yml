@@ -13,6 +13,5 @@ jobs:
       - name: Get Shellcheck
         run: apt-get update && apt-get install -y shellcheck
       - name: Check
-        working-directory: ./jsc-system
         run: shellcheck -x *.sh
 
