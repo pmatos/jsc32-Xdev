@@ -12,7 +12,7 @@ Usage:
 	build.sh 
 		[ -h | --help | --? ]     Show help and exit
 		[ -a | --arch ]           Platform to build system for (required!)
-                 [ -j ]                    Number of cores to use during build (default: 40)
+                [ -j ]                    Number of cores to use during build (default: 40)
 		[ --br2 "..." ]           Path to custom buildroot tree (default: checkout)
 		[ --br2-version "..." ]   Buildroot tag to checkout (default: 2020.02)
 		[ --br2-external "..." ]  Path to custom buildroot JSC external tree (default: checkout)
