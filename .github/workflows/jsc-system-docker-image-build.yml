@@ -1,10 +1,6 @@
 name: Build JSC System Docker images
 
-on:
-  push:
-    paths:
-      - 'jsc-system/**'
-      - '.github/workflows/jsc-system-docker-image-build.yml'
+on: push
       
 jobs:
   build-image-i386:
