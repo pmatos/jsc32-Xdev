@@ -20,7 +20,7 @@ VERSION=1.0
 
 ARCH=
 BR2PATH=
-BR2VERSION='2020.05.1'
+BR2VERSION='2020.08'
 BR2EXTERNAL=
 TEMPPATH=
 JLEVEL=$(nproc)
@@ -155,6 +155,24 @@ if ! make O="${PWD}" -C "${TEMPPATH}/buildroot" BR2_EXTERNAL="${TEMPPATH}/jsc-br
     tail "${TEMPPATH}/configure.log"
     error "failed to configure buildroot"
 fi
+
+if [[ "${ARCH}" == "arm" ]]; then
+    progress "extraordinary patching of gdb-8.3.1 in ARMv7"
+    pushd "${OUTPUT}" || error "cannot pushd"
+    make host-gdb-patch
+    pushd "${OUTPUT}/build/host-gdb-8.3.1" || error "cannot pushd"
+    if ! patch -p1 < "${DIR}/851c0536cabb661847c45c73ebd796eb3299066b.diff"; then
+        error "failed to patch"
+    fi
+    popd || error "cannot popd"
+    popd || error "cannot popd"
+fi
+
+progress "extraordinary patching of kernel 4.19"
+pushd "${OUTPUT}" || error "cannot pushd"
+make linux-patch
+sed -i 's/^YYLTYPE yylloc;$/extern YYLTYPE yylloc;/' ./build/linux-4.19.91/scripts/dtc/dtc-lexer.l
+popd || error "cannot popd"
 
 progress "building root"
 if ! make BR2_JLEVEL="${JLEVEL}" &> "${TEMPPATH}/build.log"; then
