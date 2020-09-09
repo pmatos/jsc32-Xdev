@@ -12,7 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2      
       - name: Build image
-        working-directory: ./jsc-system
         run: docker build --tag image --file Dockerfile-i386.build .
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u pmatos --password-stdin
@@ -40,7 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build image
-        working-directory: ./jsc-system
         run: docker build --build-arg ARCH=arm --tag image --file Dockerfile.build .
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u pmatos --password-stdin
@@ -68,7 +66,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build image
-        working-directory: ./jsc-system
         run: docker build --build-arg ARCH=mips --tag image --file Dockerfile.build .
 
       - name: Log into registry
