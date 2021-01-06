@@ -1,4 +1,4 @@
-![](.github/badges/SponsoredbyIgalia.svg)
+[![](.github/badges/SponsoredbyIgalia.svg)](https://www.igalia.com)
 
 # JSC32 Xdev
 
