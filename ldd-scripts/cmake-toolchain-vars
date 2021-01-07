@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'shellwords'
+require 'tmpdir'
+
+MARKER="4e9059aefab257f4"
+VARNAMES= [
+  "CMAKE_C_COMPILER",
+  "CMAKE_CXX_COMPILER",
+  "CMAKE_PROGRAM_PATH",
+  "CMAKE_FIND_ROOT_PATH",
+]
+
+def pute(s)
+  $stderr.puts(s)
+end
+
+def cmake_dump_var(name)
+  "message(\"#{MARKER}#{name}=${#{name}}#{MARKER}\")"
+end
+
+def gen_cmakelists(varnames)
+  <<EOF
+project(DumpToolchainInfo)
+#{varnames.collect { |name| cmake_dump_var(name)}.join("\n")}
+EOF
+end
+
+def run_cmake(toolchainfile, cmakelists)
+  Dir.mktmpdir { |tmpdir|
+    Dir.chdir(tmpdir)
+    File.open("CMakeLists.txt", "w") { |f|
+      f.write(cmakelists)
+      f.flush
+    }
+    cmd = "cmake -DCMAKE_TOOLCHAIN_FILE=#{Shellwords.escape(toolchainfile)}"
+    IO.popen(cmd, :err => [:child, :out]) { |p|
+      return p.readlines
+    }
+  }
+end
+
+def get_vars(lines)
+  vars = Hash.new
+  re = Regexp.compile("#{MARKER}(.*)#{MARKER}")
+  lines.each { |l|
+    md = re.match(l)
+    next unless md
+    name, value = md[1].split('=')
+    vars[name] = value
+  }
+  vars
+end
+
+$options = {
+  :prefix => ""
+}
+
+OptionParser.new { |opts|
+  opts.on("-p", "--prefix=PREFIX", "Prepend prefix to printed vars") { |p|
+    $options[:prefix] = p
+  }
+}.parse!
+
+if ARGV.size != 1
+  pute("Need exactly one anonymous argument")
+  exit(2)
+end
+
+toolchainfile = ARGV.shift
+
+lines = run_cmake(toolchainfile, gen_cmakelists(VARNAMES))
+vars = get_vars(lines)
+
+ecode = 0
+if vars.keys != VARNAMES
+  pute("Mismatch: tried to get variables #{VARNAMES}")
+  pute("But got: #{vars.keys}")
+  ecode = 1
+end
+
+vars.each_pair { |k, v|
+  puts("export #{$options[:prefix]}#{k}=#{v}")
+}
+exit(ecode)

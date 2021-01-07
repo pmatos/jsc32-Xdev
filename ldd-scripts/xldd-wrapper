@@ -1,0 +1,38 @@
+#!/bin/sh
+# This wrapper sets CC, READELF (required by xldd) based on the values
+# of BUILDBOT_CMAKE_C_COMPILER, BUILDBOT_CMAKE_PROGRAM_PATH. We do
+# this to avoid polluting the environment with values for CC/READELF
+# that are only intended for use by xldd. In fact, we have an extra
+# XLDD_ prefix so that the user won't be confused by seeing
+# e.g. CMAKE_C_COMPILER set in the environment.
+
+if test "x$XLDD_CMAKE_C_COMPILER" = x; then
+    echo "You need to set XLDD_CMAKE_C_COMPILER" 1>&2
+    exit 2
+fi
+
+if test ! -f "$XLDD_CMAKE_C_COMPILER" -o ! -x "$XLDD_CMAKE_C_COMPILER"; then
+    echo "XLDD_CMAKE_C_COMPILER ($XLDD_CMAKE_C_COMPILER) does not point to an executable" 1>&2
+    exit 2
+fi
+
+if test "x$XLDD_CMAKE_PROGRAM_PATH" = x; then
+    echo "You need to set XLDD_CMAKE_PROGRAM_PATH" 1>&2
+    exit 2
+fi
+
+if test ! -d "$XLDD_CMAKE_PROGRAM_PATH"; then
+    echo "XLDD_CMAKE_PROGRAM_PATH ($XLDD_CMAKE_PROGRAM_PATH) is not a directory" 1>&2
+    exit 2
+fi
+
+CROSS_PREFIX="$(echo $XLDD_CMAKE_C_COMPILER | ruby -ne 'puts($_.split("/")[-1].split("-")[0..-2].join("-"))')"
+export CC="$XLDD_CMAKE_C_COMPILER"
+export READELF="$XLDD_CMAKE_PROGRAM_PATH/$CROSS_PREFIX-readelf"
+
+if test ! -f "$READELF" -o ! -x "$READELF"; then
+    echo "No $CROSS_PREFIX-readelf in XLDD_CMAKE_PROGRAM_PATH ($XLDD_CMAKE_PROGRAM_PATH)" 1>&2
+    exit 2
+fi
+
+exec xldd "$@"

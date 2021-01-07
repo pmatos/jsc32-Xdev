@@ -100,11 +100,7 @@ pushd "${WEBKIT_PATH}" || error "push failure"
 
 # Looking for toolchain file
 # Location varies in BRPATH, depending if we used sdk for installation
-TOOLCHAINFILE=$(find "${BRPATH}" -name toolchainfile.cmake -print -quit)
-if [[ -z "${TOOLCHAINFILE}" ]]; then
-    error "could not find toolchain file"
-fi
-
+TOOLCHAINFILE=$(findtoolchainfile "${BRPATH}")
 TMPLOG=$(mktemp)
 progress "building jsc"
 if ! Tools/Scripts/build-jsc "${MODEFLAG}" --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAINFILE} -DENABLE_STATIC_JSC=ON" &> "${TMPLOG}"; then

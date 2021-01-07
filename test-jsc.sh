@@ -257,11 +257,19 @@ echo '] }'                                       >> "$REMOTES_PATH"
 
 progress "running tests with output redirected to stdout"
 
+# Setup cross-ldd
+TOOLCHAINFILE=$(findtoolchainfile "${BRPATH}")
+if [[ -z "${TOOLCHAINFILE}" ]]; then
+    error "no toolchain file available"
+fi
+${DIR}/ldd-scripts/cmake-toolchain-vars --prefix=XLDD_ ${TOOLCHAINFILE} | source /dev/stdin
+export PATH="${DIR}/ldd-scripts:${PATH}"
+
 # Run tests through run-javascriptcore-tests
 if [ -n "${TIMEOUT}" ]; then
     export JSCTEST_timeout="${TIMEOUT}"
 fi
-"${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --no-build --no-fail-fast "${MODEFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only "${FFLAG[@]}" 2>&1
+"${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --ldd "${DIR}/ldd-scripts/xldd-wrapper" --no-build --no-fail-fast "${MODEFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only "${FFLAG[@]}" 2>&1
 
 # Killall qemu systems and clean up HDDs
 for i in $(seq 1 "${N}"); do
