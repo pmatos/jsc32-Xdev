@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 # This wrapper sets CC, READELF (required by xldd) based on the values
 # of BUILDBOT_CMAKE_C_COMPILER, BUILDBOT_CMAKE_PROGRAM_PATH. We do
 # this to avoid polluting the environment with values for CC/READELF

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 version="1.23"
 export LC_ALL=C
 my_name="$( basename "${0}" )"

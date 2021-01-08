@@ -262,13 +262,13 @@ TOOLCHAINFILE=$(findtoolchainfile "${BRPATH}")
 if [[ -z "${TOOLCHAINFILE}" ]]; then
     error "no toolchain file available"
 fi
-${DIR}/ldd-scripts/cmake-toolchain-vars --prefix=XLDD_ ${TOOLCHAINFILE} | source /dev/stdin
-export PATH="${DIR}/ldd-scripts:${PATH}"
 
-# Now we should be able to find xldd in PATH
-if ! which xldd &> /dev/null; then
-    error "cannot find xldd in PATH"
-fi
+ENVVARS=$(mktemp)
+${DIR}/ldd-scripts/cmake-toolchain-vars --prefix=XLDD_ ${TOOLCHAINFILE} > ${ENVVARS}
+source ${ENVVARS}
+rm ${ENVVARS}
+
+export PATH=${DIR}/ldd-scripts:${PATH}
 
 # Run tests through run-javascriptcore-tests
 if [ -n "${TIMEOUT}" ]; then
