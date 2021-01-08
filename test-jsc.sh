@@ -266,7 +266,7 @@ ${DIR}/ldd-scripts/cmake-toolchain-vars --prefix=XLDD_ ${TOOLCHAINFILE} | source
 export PATH="${DIR}/ldd-scripts:${PATH}"
 
 # Now we should be able to find xldd in PATH
-if ! `which xldd`; then
+if ! which xldd &> /dev/null; then
     error "cannot find xldd in PATH"
 fi
 
