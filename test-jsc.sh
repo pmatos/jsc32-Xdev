@@ -264,9 +264,9 @@ if [[ -z "${TOOLCHAINFILE}" ]]; then
 fi
 
 ENVVARS=$(mktemp)
-${DIR}/ldd-scripts/cmake-toolchain-vars --prefix=XLDD_ ${TOOLCHAINFILE} > ${ENVVARS}
-source ${ENVVARS}
-rm ${ENVVARS}
+"${DIR}/ldd-scripts/cmake-toolchain-vars" --prefix=XLDD_ "${TOOLCHAINFILE}" > "${ENVVARS}"
+source "${ENVVARS}"
+rm "${ENVVARS}"
 
 export PATH=${DIR}/ldd-scripts:${PATH}
 
