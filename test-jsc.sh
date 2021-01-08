@@ -265,6 +265,11 @@ fi
 ${DIR}/ldd-scripts/cmake-toolchain-vars --prefix=XLDD_ ${TOOLCHAINFILE} | source /dev/stdin
 export PATH="${DIR}/ldd-scripts:${PATH}"
 
+# Now we should be able to find xldd in PATH
+if ! `which xldd`; then
+    error "cannot find xldd in PATH"
+fi
+
 # Run tests through run-javascriptcore-tests
 if [ -n "${TIMEOUT}" ]; then
     export JSCTEST_timeout="${TIMEOUT}"
