@@ -34,8 +34,10 @@ findtoolchainfile()
 {
     # Looking for toolchain file
     # Location varies in BRPATH, depending if we used sdk for installation
-    local brpath="$1"
-    local f=$(find "${brpath}" -name toolchainfile.cmake -print -quit)
+    local brpath
+    local f
+    brpath="$1"
+    f=$(find "${brpath}" -name toolchainfile.cmake -print -quit)
     if [[ -z "${f}" ]]; then
         error "could not find toolchain file"
     fi
